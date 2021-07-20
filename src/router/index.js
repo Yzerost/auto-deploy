@@ -82,6 +82,12 @@ export const constantRoutes = [
       }
     ]
   },
+  {
+    path: '/upgrade',
+    component: Layout,
+    name: 'upgrade',
+    meta: { title: '方案升级' }
+  },
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]

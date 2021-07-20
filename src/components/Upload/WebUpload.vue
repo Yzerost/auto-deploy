@@ -8,21 +8,6 @@
         >
           <i class="el-icon-plus" />
           选择文件</div>
-        <el-button
-          type="success"
-          :icon="uploadStaus"
-          class="handle-del mr10"
-          :disabled="uploadBtnDisabled"
-          @click="uploadToServer()"
-        >开始上传</el-button>
-        <el-button
-          type="danger"
-          icon="el-icon-close"
-          class="handle-del mr10"
-          :disabled="uploadBtnDisabled"
-          @click="clearFiles()"
-        >清空文件</el-button>
-
       </div>
       <div class="showMsg">支持上传的文件后缀：{{ options.fileType }}</div>
       <el-table
@@ -87,15 +72,29 @@
               class="red"
               @click="removeRow(scope.$index, scope.row)"
             >移除</el-button>
-            <el-button
-              type="text"
-              icon="el-icon-search"
-              class="red"
-              @click="seeFile(scope.$index, scope.row)"
-            >查看</el-button>
+            <!--            <el-button-->
+            <!--              type="text"-->
+            <!--              icon="el-icon-search"-->
+            <!--              class="red"-->
+            <!--              @click="seeFile(scope.$index, scope.row)"-->
+            <!--            >查看</el-button>-->
           </template>
         </el-table-column>
       </el-table>
+      <el-button
+        type="success"
+        :icon="uploadStaus"
+        class="handle-del mr10"
+        :disabled="uploadBtnDisabled"
+        @click="uploadToServer()"
+      >开始上传</el-button>
+      <el-button
+        type="danger"
+        icon="el-icon-close"
+        class="handle-del mr10"
+        :disabled="uploadBtnDisabled"
+        @click="clearFiles()"
+      >清空文件</el-button>
     </div>
   </div>
 </template>
@@ -120,7 +119,7 @@ export default {
     },
     chunkSize: {
       type: Number,
-      default: 200 * 1024 * 1024
+      default: 100 * 1024 * 1024
     },
     uploadSuffixUrl: {
       type: String,

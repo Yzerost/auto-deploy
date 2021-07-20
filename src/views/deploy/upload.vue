@@ -22,7 +22,7 @@
     </div>
 
     <!-- 编辑弹出框 -->
-    <el-dialog :title="formTitle" :visible.sync="editVisible" width="1200px">
+    <el-dialog :title="formTitle" :visible.sync="editVisible" width="1400px">
       <WebUpload
         :file-num-limit="fileNumLimit"
         :file-size="fileSize"
@@ -31,26 +31,26 @@
         :options="options"
         :file-list-data="fileList"
       />
-      <span slot="footer" class="dialog-footer">
-        <!--<el-button @click="editVisible = false">取 消</el-button>-->
-        <el-button type="primary" @click="saveEdit">确 定</el-button>
-      </span>
+<!--      <span slot="footer" class="dialog-footer">-->
+<!--        <el-button @click="editVisible = false">取 消</el-button>-->
+<!--        <el-button type="primary" @click="saveEdit">确 定</el-button>-->
+<!--      </span>-->
     </el-dialog>
 
     <!--图片查看-->
-    <el-dialog title="图片查看" :visible.sync="showImgVisible" width="800px">
-      <el-image
-        v-if="imageUrl"
-        class="avatar"
-        npm
-        :src="imageUrl"
-        :preview-src-list="[imageUrl]"
-      />
-      <span slot="footer" class="dialog-footer">
-        <!--<el-button @click="editVisible = false">取 消</el-button>-->
-        <el-button type="primary" @click="showImgVisible=false;imageUrl=''">关 闭</el-button>
-      </span>
-    </el-dialog>
+<!--    <el-dialog title="图片查看" :visible.sync="showImgVisible" width="800px">-->
+<!--      <el-image-->
+<!--        v-if="imageUrl"-->
+<!--        class="avatar"-->
+<!--        npm-->
+<!--        :src="imageUrl"-->
+<!--        :preview-src-list="[imageUrl]"-->
+<!--      />-->
+<!--      <span slot="footer" class="dialog-footer">-->
+<!--        &lt;!&ndash;<el-button @click="editVisible = false">取 消</el-button>&ndash;&gt;-->
+<!--        <el-button type="primary" @click="showImgVisible=false;imageUrl=''">关 闭</el-button>-->
+<!--      </span>-->
+<!--    </el-dialog>-->
 
     <!--Excel导出-->
 
@@ -97,7 +97,7 @@ export default {
       fileList: [], // 显示集合
       fileNumLimit: 200, // 文件总数
       fileSize: 100 * 1024 * 1024 * 1024, // 默认上传文件大小
-      chunkSize: 200 * 1024 * 1024, // 默认文件片段
+      chunkSize: 100 * 1024 * 1024, // 默认文件片段
       uploadSuffixUrl: 'http://localhost:8080/',
       options: {
         // 允许上传的文件

@@ -14,6 +14,7 @@ import axios from 'axios'
 import Loading from '@/components/loading'
 
 export default {
+  components: { Loading },
   name: 'Config',
   data() {
     return {
@@ -22,14 +23,38 @@ export default {
       dhcpMask: ''
     }
   },
+  created() {
+    this.getConfig()
+  },
   methods: {
-    config() {
-      const url = '/config'
+    getConfig() {
+      const url = '/nodesManagement/getDHCPInfo'
       this.isLoading = true
-      axios.post(url, {
-        dhcpPool: this.dhcpPool,
-        dhcpMask: this.dhcpMask
-      }).then(res => {
+      axios.get(url).then(res => {
+        // console.log(res)
+        this.isLoading = false
+        if (res.status === 200) {
+          this.dhcpMask = res.data.dhcpMask
+          this.dhcpPool = res.data.dhcpIPPond
+          this.$message.success('获取配置成功')
+        } else {
+          this.$message.error(res.status)
+        }
+      })
+    },
+    config() {
+      const url = '/nodesManagement/addDHCPInfo'
+      this.isLoading = true
+      axios({
+        method: 'post',
+        url: url,
+        headers: {
+          'Content-type': 'application/x-www-form-urlencoded'
+        },
+        params: {
+          dhcpIPPond: this.dhcpPool,
+          dhcpMask: this.dhcpMask
+        }}).then(res => {
         // console.log(res)
         this.isLoading = false
         if (res.status === 200) {
