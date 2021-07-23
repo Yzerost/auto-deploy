@@ -40,7 +40,36 @@
         align="center"
       >
         <template>
-          <el-button type="text" size="small" round @click="deployDialogFormVisible = true,deploy(scope.row)">部署</el-button>
+          <el-button type="text" size="small" round @click="deployDialogFormVisible = true,beforeDeploy()">部署</el-button>
+          <el-dialog title="部署节点" :visible.sync="deployDialogFormVisible" :close-on-click-modal="false" style="width: 1800px">
+            <el-form :model="scope.row" :label-position="labelPosition" label-width="120px" :inline="true">
+              <el-form-item label="文件选择:" />
+              <el-form-item>
+                <el-select v-model="scope.row.productType" title="产品类型" filterable placeholder="选择部署类型">
+                  <el-option
+                    v-for="type in productTypes"
+                    :key="type.value"
+                    :label="type.label"
+                    :value="type.value"
+                  />
+                </el-select>
+              </el-form-item>
+              <el-form-item>
+                <el-select v-model="scope.row.productVersion" title="产品版本" filterable placeholder="选择部署版本">
+                  <el-option
+                    v-for="type in productVersions"
+                    :key="type.value"
+                    :label="type.label"
+                    :value="type.value"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+              <el-button @click="deployDialogFormVisible = false">取 消</el-button>
+              <el-button type="primary" @click="deployDialogFormVisible = false,deploy(scope.row)">确 定</el-button>
+            </div>
+          </el-dialog>
           <el-button type="text" size="small" round @click="beforeEdit(scope.row)">编辑</el-button>
           <el-dialog title="编辑节点" :visible.sync="editDialogFormVisible" :close-on-click-modal="false" style="width: 1800px">
             <el-form :model="editNode" :label-position="labelPosition" label-width="120px" :inline="true">
@@ -223,6 +252,8 @@ export default {
       input: '',
       node: {},
       editNode: {},
+      productTypes: [],
+      productVersions: [],
       versionList: [
         {
           value: 'E0701',
@@ -319,26 +350,50 @@ export default {
         }
       })
     },
+    beforeDeploy() {
+      this.productTypes = []
+      this.productVersions = []
+      const getTypeUrl = '/fileManagement/getAllProductType'
+      const getVersionUrl = '/fileManagement/getVersionByType'
+      axios.get(getTypeUrl).then(res => {
+        // console.log(res)
+        if (res.status === 200) {
+          res.data.forEach((item) => {
+            const productType = { value: item, label: item }
+            this.productTypes.push(productType)
+          })
+        } else {
+          this.$message.error(res.status)
+        }
+      })
+      axios.get(getVersionUrl).then(res => {
+        // console.log(res)
+        if (res.status === 200) {
+          res.data.forEach((item) => {
+            const productVersion = { value: item, label: item }
+            this.productVersions.push(productVersion)
+          })
+        } else {
+          this.$message.error(res.status)
+        }
+      })
+    },
     deploy(item) {
       const url = '/nodesManagement/nodeDeploy'
-      console.log(item)
+      const nodes = []
+      const node = { nodeId: item.nodeId, nodeName: item.nodeName, managementIP: item.managementIP, nodeHDMIP: item.nodeHDMIP }
+      nodes.push(node)
       this.isLoading = true
-      axios.post(url, {
-        nodeName: item.nodeName,
-        nodeHDMIP: item.nodeHDMIP,
-        nodeHDMPaasword: item.nodeHDMPaasword,
-        nodeType: item.nodeType,
-        managementIP: item.managementIP,
-        managementMask: item.managementMask,
-        managementGateway: item.managementGateway,
-        businessIP: item.businessIP,
-        businessMask: item.businessMask,
-        businessGateway: item.businessGateway,
-        storageIP: item.storageIP,
-        storageMask: item.storageMask,
-        storageGateway: item.storageGateway,
-        productType: item.productType,
-        productVersion: item.productVersion
+      axios({
+        method: 'post',
+        url: url,
+        data: {
+          // productType: item.productType,
+          // productVersion: item.productVersion,
+          productType: item.productType,
+          productVersion: item.productVersion,
+          nodes: JSON.stringify(nodes)
+        }
       }).then(res => {
         // console.log(res)
         this.isLoading = false

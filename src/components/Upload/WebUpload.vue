@@ -123,7 +123,8 @@ export default {
     },
     uploadSuffixUrl: {
       type: String,
-      default: 'http://localhost:8080'
+      default: 'http://210.0.0.233:8080'
+      // default: 'http://localhost:8080'
     },
     options: {
       type: Object,
