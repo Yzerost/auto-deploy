@@ -106,7 +106,7 @@ export default {
         fileType: 'iso,cfg,tar,zip',
         // fileUploadUrl: '/upload/fileRecord/zone/upload', // 上传地址
         fileUploadUrl: '/fileManagement/upload',
-        fileCheckUrl: '/upload/fileRecord/zone/upload/md5Check', // 检测文件是否存在url
+        fileCheckUrl: '/fileManagement/isFileExist', // 检测文件是否存在url
         checkChunkUrl: '/upload/fileRecord/zone/upload/md5Check', // 检测分片url
         // mergeChunksUrl: '/upload/fileRecord/zone/upload/merge/', // 合并文件请求地址
         mergeChunksUrl: '/fileManagement/merge',

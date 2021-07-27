@@ -133,7 +133,7 @@ export default {
         fileType: 'iso,cfg,tar,zip',
         // fileUploadUrl: '/upload/fileRecord/zone/upload', // 上传地址
         fileUploadUrl: '/fileManagement/upload',
-        fileCheckUrl: '/upload/fileRecord/zone/upload/md5Check', // 检测文件是否存在url
+        fileCheckUrl: '/fileManagement/isFileExist', // 检测文件是否存在url
         checkChunkUrl: '/upload/fileRecord/zone/upload/md5Check', // 检测分片url
         // mergeChunksUrl: '/upload/fileRecord/zone/upload/merge/', // 合并文件请求地址
         mergeChunksUrl: '/fileManagement/merge',
@@ -219,7 +219,7 @@ export default {
       var that = this
       var options = this.options
       var headers = options.headers || {}
-      // var fileCheckUrl = uploadSuffixUrl + options.fileCheckUrl// 检测文件是否存在url
+      var fileCheckUrl = uploadSuffixUrl + options.fileCheckUrl// 检测文件是否存在url
       // var checkChunkUrl = uploadSuffixUrl + options.checkChunkUrl// 检测分片url
       var mergeChunksUrl = uploadSuffixUrl + options.mergeChunksUrl// 合并文件请求地址
 
@@ -240,7 +240,42 @@ export default {
           (new webUploader.Uploader()).md5File(file, 0, 10 * 1024 * 1024).progress(function(percentage) {
           }).then(function(val) {
             file.fileMd5 = val
-            deferred.resolve()
+            // deferred.resolve()
+            $.ajax({
+              type: 'GET',
+              url: fileCheckUrl,
+              headers: headers,
+              data: {
+                fileName: file.name,
+                productVersion: file.version
+              },
+              dataType: 'json',
+              success: function(response) {
+                if (response) {
+                  that.uploader.skipFile(file)
+                  that.setTableBtn(file.name, '文件已存在')
+                  that.$notify.success({
+                    showClose: true,
+                    message: `[ ${file.name} ]文件秒传`
+                  })
+                  // 如果存在，则跳过该文件，秒传成功
+                  that.fList.push(response.data)
+                  deferred.reject()
+                } else {
+                  if (response.code === 30001) { // 判断是否支持此类文件上传
+                    var m = response.message + '，文件后缀：' + file.ext
+                    that.uploader.skipFile(file)
+                    that.setTableBtn(file.id, m)
+                    // 如果存在，则跳过该文件，秒传成功
+                    that.fList.push(response.data)
+                    deferred.reject()
+                  } else {
+                    // 继续上传
+                    deferred.resolve()
+                  }
+                }
+              }
+            })
           })
           // 返回deffered
           return deferred.promise()
