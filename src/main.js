@@ -12,8 +12,8 @@ import App from './App'
 import store from './store'
 import router from './router'
 import axios from 'axios'
-// axios.defaults.baseURL = 'http://localhost:8080'
-axios.defaults.baseURL = 'http://210.0.0.233:8080'
+axios.defaults.baseURL = 'http://localhost:8080'
+// axios.defaults.baseURL = 'http://210.0.0.233:8080'
 import '@/icons' // icon
 
 import api from '@/api/index.js'

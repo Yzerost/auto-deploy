@@ -1,8 +1,8 @@
 import request from '../utils/request'
 import qs from 'qs'
 // 请求前缀参数
-// const reqURL = 'http://localhost:8080/upload/fileRecord'
-const reqURL = 'http://210.0.0.233:8080/upload/fileRecord'
+const reqURL = 'http://localhost:8080/upload/fileRecord'
+// const reqURL = 'http://210.0.0.233:8080/upload/fileRecord'
 // 获取数据
 export const getList = (param, page, size) => {
   page = page || 1

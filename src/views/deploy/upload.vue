@@ -98,8 +98,8 @@ export default {
       fileNumLimit: 200, // 文件总数
       fileSize: 100 * 1024 * 1024 * 1024, // 默认上传文件大小
       chunkSize: 100 * 1024 * 1024, // 默认文件片段
-      // uploadSuffixUrl: 'http://localhost:8080/',
-      uploadSuffixUrl: 'http://210.0.0.233:8080/',
+      uploadSuffixUrl: 'http://localhost:8080/',
+      // uploadSuffixUrl: 'http://210.0.0.233:8080/',
       options: {
         // 允许上传的文件
         // fileType: 'doc,docx,pdf,xls,xlsx,ppt,pptx,gif,jpg,jpeg,bmp,png,rar,zip,mp4,avi',

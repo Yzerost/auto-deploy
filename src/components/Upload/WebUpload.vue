@@ -123,8 +123,8 @@ export default {
     },
     uploadSuffixUrl: {
       type: String,
-      default: 'http://210.0.0.233:8080'
-      // default: 'http://localhost:8080'
+      // default: 'http://210.0.0.233:8080'
+      default: 'http://localhost:8080'
     },
     options: {
       type: Object,
@@ -253,10 +253,10 @@ export default {
               success: function(response) {
                 if (response) {
                   that.uploader.skipFile(file)
-                  that.setTableBtn(file.name, '文件已存在')
+                  // that.setTableBtn(file.name, '文件已存在')
                   that.$notify.success({
-                    showClose: true,
-                    message: `[ ${file.name} ]文件秒传`
+                    // showClose: true,
+                    message: `[ ${file.name} ]文件后台已存在`
                   })
                   // 如果存在，则跳过该文件，秒传成功
                   that.fList.push(response.data)
