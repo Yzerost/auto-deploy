@@ -381,7 +381,8 @@ export default {
     deploy(item) {
       const url = '/nodesManagement/nodeDeploy'
       const nodes = []
-      const node = { nodeId: item.nodeId, nodeName: item.nodeName, managementIP: item.managementIP, nodeHDMIP: item.nodeHDMIP }
+      const node = { nodeId: item.nodeId, nodeName: item.nodeName, managementIP: item.managementIP,
+        managementMask: item.managementMask, managementGateway: item.managementGateway, nodeHDMIP: item.nodeHDMIP }
       nodes.push(node)
       this.isLoading = true
       axios({
