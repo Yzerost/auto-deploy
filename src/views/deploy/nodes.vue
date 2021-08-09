@@ -40,7 +40,7 @@
         align="center"
       >
         <template>
-          <el-button type="text" size="small" round @click="deployDialogFormVisible = true,beforeDeploy()">部署</el-button>
+          <el-button type="text" size="small" round @click="deployDialogFormVisible = true,beforeDeploy(scope.row)">部署</el-button>
           <el-dialog title="部署节点" :visible.sync="deployDialogFormVisible" :close-on-click-modal="false" style="width: 1800px">
             <el-form :model="scope.row" :label-position="labelPosition" label-width="120px" :inline="true">
               <el-form-item label="文件选择:" />
@@ -350,33 +350,38 @@ export default {
         }
       })
     },
-    beforeDeploy() {
-      this.productTypes = []
-      this.productVersions = []
-      const getTypeUrl = '/fileManagement/getAllProductType'
-      const getVersionUrl = '/fileManagement/getVersionByType'
-      axios.get(getTypeUrl).then(res => {
-        // console.log(res)
-        if (res.status === 200) {
-          res.data.forEach((item) => {
-            const productType = { value: item, label: item }
-            this.productTypes.push(productType)
-          })
-        } else {
-          this.$message.error(res.status)
-        }
-      })
-      axios.get(getVersionUrl).then(res => {
-        // console.log(res)
-        if (res.status === 200) {
-          res.data.forEach((item) => {
-            const productVersion = { value: item, label: item }
-            this.productVersions.push(productVersion)
-          })
-        } else {
-          this.$message.error(res.status)
-        }
-      })
+    beforeDeploy(item) {
+      if (item.nodeStatus === '占用') {
+        this.$message.error('占用状态节点不能部署')
+        this.deployDialogFormVisible = false
+      } else {
+        this.productTypes = []
+        this.productVersions = []
+        const getTypeUrl = '/fileManagement/getAllProductType'
+        const getVersionUrl = '/fileManagement/getVersionByType'
+        axios.get(getTypeUrl).then(res => {
+          // console.log(res)
+          if (res.status === 200) {
+            res.data.forEach((item) => {
+              const productType = { value: item, label: item }
+              this.productTypes.push(productType)
+            })
+          } else {
+            this.$message.error(res.status)
+          }
+        })
+        axios.get(getVersionUrl).then(res => {
+          // console.log(res)
+          if (res.status === 200) {
+            res.data.forEach((item) => {
+              const productVersion = { value: item, label: item }
+              this.productVersions.push(productVersion)
+            })
+          } else {
+            this.$message.error(res.status)
+          }
+        })
+      }
     },
     deploy(item) {
       const url = '/nodesManagement/nodeDeploy'
@@ -384,7 +389,7 @@ export default {
       const node = { nodeId: item.nodeId, nodeName: item.nodeName, managementIP: item.managementIP,
         managementMask: item.managementMask, managementGateway: item.managementGateway, nodeHDMIP: item.nodeHDMIP }
       nodes.push(node)
-      this.isLoading = true
+      // this.isLoading = true
       axios({
         method: 'post',
         url: url,
