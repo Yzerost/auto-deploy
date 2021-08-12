@@ -42,10 +42,10 @@
         <template>
           <el-button type="text" size="small" round @click="deployDialogFormVisible = true,beforeDeploy(scope.row)">部署</el-button>
           <el-dialog title="部署节点" :visible.sync="deployDialogFormVisible" :close-on-click-modal="false" style="width: 1800px">
-            <el-form :model="scope.row" :label-position="labelPosition" label-width="120px" :inline="true">
+            <el-form :model="deployNode" :label-position="labelPosition" label-width="120px" :inline="true">
               <el-form-item label="文件选择:" />
               <el-form-item>
-                <el-select v-model="scope.row.productType" title="产品类型" filterable placeholder="选择部署类型">
+                <el-select v-model="deployNode.productType" title="产品类型" filterable placeholder="选择部署类型">
                   <el-option
                     v-for="type in productTypes"
                     :key="type.value"
@@ -55,7 +55,7 @@
                 </el-select>
               </el-form-item>
               <el-form-item>
-                <el-select v-model="scope.row.productVersion" title="产品版本" filterable placeholder="选择部署版本">
+                <el-select v-model="deployNode.productVersion" title="产品版本" filterable placeholder="选择部署版本">
                   <el-option
                     v-for="type in productVersions"
                     :key="type.value"
@@ -67,7 +67,7 @@
             </el-form>
             <div slot="footer" class="dialog-footer">
               <el-button @click="deployDialogFormVisible = false">取 消</el-button>
-              <el-button type="primary" @click="deployDialogFormVisible = false,deploy(scope.row)">确 定</el-button>
+              <el-button type="primary" @click="deployDialogFormVisible = false,deploy(deployNode)">确 定</el-button>
             </div>
           </el-dialog>
           <el-button type="text" size="small" round @click="beforeEdit(scope.row)">编辑</el-button>
@@ -252,6 +252,7 @@ export default {
       input: '',
       node: {},
       editNode: {},
+      deployNode: {},
       productTypes: [],
       productVersions: [],
       versionList: [
@@ -375,6 +376,12 @@ export default {
         this.$message.error('占用状态节点不能部署')
         this.deployDialogFormVisible = false
       } else {
+        this.$set(this.deployNode, 'nodeId', item.nodeId)
+        this.$set(this.deployNode, 'nodeName', item.nodeName)
+        this.$set(this.deployNode, 'managementIP', item.managementIP)
+        this.$set(this.deployNode, 'managementMask', item.managementMask)
+        this.$set(this.deployNode, 'managementGateway', item.managementGateway)
+        this.$set(this.deployNode, 'nodeHDMIP', item.nodeHDMIP)
         this.productTypes = []
         this.productVersions = []
         const getTypeUrl = '/fileManagement/getAllProductType'
