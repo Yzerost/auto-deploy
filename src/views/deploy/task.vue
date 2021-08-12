@@ -49,8 +49,8 @@
       <el-table-column type="selection" width="55" />
       <!--索引-->
       <el-table-column type="index" :index="indexMethod" label="序号" width="80" align="center" />
-      <el-table-column prop="name" label="工程名称" width="180" align="center" />
-      <el-table-column prop="brief" label="工程简介" align="center" />
+      <el-table-column prop="projectName" label="工程名称" width="180" align="center" />
+      <el-table-column prop="projectDescribe" label="工程简介" align="center" />
       nodeStatus
       <el-table-column
         v-slot="scope"
@@ -221,10 +221,7 @@ export default {
       axios({
         method: 'post',
         url: url,
-        headers: {
-          'Content-type': 'application/x-www-form-urlencoded'
-        },
-        params: {
+        data: {
           name: item.name,
           brief: item.brief,
           products: JSON.stringify(item.products)
