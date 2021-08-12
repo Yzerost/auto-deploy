@@ -172,34 +172,34 @@ export default {
       this.sels = sels
     },
     getTasks(currentPage, pageSize) {
-      this.isLoading = false
-      // const url = '/projectManagement/projectList'
-      // this.isLoading = true
-      // axios.get(url).then(res => {
-      //   this.totalData = res.data
-      //   const totalSize = res.data.length
-      //   this.tableData = res.data.slice(pageSize * (currentPage - 1), (pageSize * currentPage >= totalSize) ? totalSize : (pageSize * currentPage))
-      //   this.isLoading = false
-      // }).catch(error => {
-      //   this.isLoading = false
-      //   if (error.response) {
-      //     console.log('error.response')
-      //     console.log(error.response)
-      //   } else if (error.request) {
-      //     console.log(error.request)
-      //     this.$message({
-      //       duration: 6000,
-      //       message: '请求异常',
-      //       type: 'error'
-      //     })
-      //     if (error.request.readyState === 4 && error.request.status === 0) {
-      //       console.log('补充重试逻辑')
-      //     }
-      //   } else {
-      //     console.log('Error', error.message)
-      //   }
-      //   console.log(error.config)
-      // })
+      // this.isLoading = false
+      const url = '/projectManagement/projectList'
+      this.isLoading = true
+      axios.get(url).then(res => {
+        this.totalData = res.data
+        const totalSize = res.data.length
+        this.tableData = res.data.slice(pageSize * (currentPage - 1), (pageSize * currentPage >= totalSize) ? totalSize : (pageSize * currentPage))
+        this.isLoading = false
+      }).catch(error => {
+        this.isLoading = false
+        if (error.response) {
+          console.log('error.response')
+          console.log(error.response)
+        } else if (error.request) {
+          console.log(error.request)
+          this.$message({
+            duration: 6000,
+            message: '请求异常',
+            type: 'error'
+          })
+          if (error.request.readyState === 4 && error.request.status === 0) {
+            console.log('补充重试逻辑')
+          }
+        } else {
+          console.log('Error', error.message)
+        }
+        console.log(error.config)
+      })
     },
     handleSizeChange(val) {
       this.pageSize = val
