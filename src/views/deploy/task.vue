@@ -104,12 +104,15 @@
               <el-form-item label="工程简介:">
                 <el-input v-model="editProject.brief" />
               </el-form-item>
-              <el-form-item label="部署服务:">
-                <el-checkbox-group v-model="editProject.products">
-                  <el-checkbox label="CAS" />
-                  <el-checkbox label="ONEStor" />
-                  <el-checkbox label="CloudOS" />
-                </el-checkbox-group>
+              <el-form-item label="部署节点">
+                <el-select v-model="editProject.nodes" multiple placeholder="请选择" value-key="nodeId">
+                  <el-option
+                    v-for="item in nodes"
+                    :key="item.value.nodeId"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
               </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -122,10 +125,10 @@
             cancel-button-text="不用了"
             icon="el-icon-info"
             icon-color="red"
-            :title="`是否删除工程：【${scope.row.name}】？`"
-            @onConfirm="handleDelete(scope.row.id)"
+            :title="`是否删除工程：【${scope.row.projectName}】？`"
+            @onConfirm="handleDelete(scope.row)"
           >
-            <el-button slot="reference" type="text" size="small" @click="handleDelete(scope.row.nodeName)">删除</el-button>
+            <el-button slot="reference" type="text" size="small" @click="handleDelete(scope.row)">删除</el-button>
           </el-popconfirm>
         </template>
       </el-table-column>
@@ -292,6 +295,53 @@ export default {
           // this.$set(this.node, 'description', '')
         } else {
           this.$message.error(res.status)
+        }
+      })
+    },
+    handleDelete(item) {
+      const url = 'projectManagement/projectDelete'
+      this.isLoading = true
+      axios({
+        method: 'post',
+        url: url,
+        headers: {
+          'Content-type': 'application/x-www-form-urlencoded'
+        },
+        params: {
+          projectId: item.projectId
+        }
+      }).then(res => {
+        // console.log(res.headers)
+        this.isLoading = false
+        this.$message.warning('成功删除节点!' + item.projectName + '!')
+        this.getTasks(this.currentPage, this.pageSize)
+      })
+    },
+    beforeEdit(item) {
+      this.editDialogFormVisible = true
+      this.$set(this.editProject, 'projectId', item.projectId)
+      this.$set(this.editProject, 'name', item.projectName)
+      this.$set(this.editProject, 'brief', item.projectDescribe)
+      this.$set(this.editProject, 'nodes', item.projectProductList)
+    },
+    edit(item) {
+      const url = '/projectManagement/projectEdit'
+      this.isLoading = true
+      axios({
+        method: 'put',
+        url: url,
+        data: {
+          projectId: item.projectId,
+          name: item.name,
+          brief: item.brief,
+          products: JSON.stringify(item.nodes)
+        }
+      }).then(res => {
+        this.isLoading = false
+        if (res.status === 200) {
+          this.$message.success('编辑节点' + item.nodeName + '】成功')
+          this.editNode = {}
+          this.getNodes(this.currentPage, this.pageSize)
         }
       })
     }
