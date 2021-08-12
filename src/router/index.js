@@ -79,6 +79,12 @@ export const constantRoutes = [
         name: 'config',
         component: () => import('@/views/deploy/config'),
         meta: { title: '配置管理' }
+      },
+      {
+        path: 'task',
+        name: 'task',
+        component: () => import('@/views/deploy/task'),
+        meta: { title: '任务管理' }
       }
     ]
   },

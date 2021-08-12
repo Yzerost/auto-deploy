@@ -298,6 +298,25 @@ export default {
         const totalSize = res.data.length
         this.tableData = res.data.slice(pageSize * (currentPage - 1), (pageSize * currentPage >= totalSize) ? totalSize : (pageSize * currentPage))
         this.isLoading = false
+      }).catch(error => {
+        this.isLoading = false
+        if (error.response) {
+          console.log('error.response')
+          console.log(error.response)
+        } else if (error.request) {
+          console.log(error.request)
+          this.$message({
+            duration: 6000,
+            message: '请求异常',
+            type: 'error'
+          })
+          if (error.request.readyState === 4 && error.request.status === 0) {
+            console.log('补充重试逻辑')
+          }
+        } else {
+          console.log('Error', error.message)
+        }
+        console.log(error.config)
       })
     },
     handleSizeChange(val) {
@@ -327,6 +346,7 @@ export default {
           nodeHDMIP: item.nodeHDMIP,
           nodeHDMPaasword: item.nodeHDMPaasword,
           nodeType: item.nodeType,
+          productVersion: item.productVersion,
           managementIP: item.managementIP,
           managementMask: item.managementMask,
           managementGateway: item.managementGateway,
