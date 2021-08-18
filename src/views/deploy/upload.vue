@@ -1,12 +1,5 @@
 <template>
   <div>
-<!--    <div class="crumbs">-->
-<!--      <el-breadcrumb separator="/">-->
-<!--        <el-breadcrumb-item>-->
-<!--          <i class="el-icon-lx-cascades" /> 文件列表-->
-<!--        </el-breadcrumb-item>-->
-<!--      </el-breadcrumb>-->
-<!--    </div>-->
     <div class="container">
       <div class="handle-box">
         <div style="margin: 10px 0 -10px 0;">
@@ -20,7 +13,6 @@
         </div>
       </div>
     </div>
-
     <!-- 编辑弹出框 -->
     <el-dialog :title="formTitle" :visible.sync="editVisible" width="1400px">
       <WebUpload
@@ -36,30 +28,42 @@
 <!--        <el-button type="primary" @click="saveEdit">确 定</el-button>-->
 <!--      </span>-->
     </el-dialog>
-
-    <!--图片查看-->
-<!--    <el-dialog title="图片查看" :visible.sync="showImgVisible" width="800px">-->
-<!--      <el-image-->
-<!--        v-if="imageUrl"-->
-<!--        class="avatar"-->
-<!--        npm-->
-<!--        :src="imageUrl"-->
-<!--        :preview-src-list="[imageUrl]"-->
-<!--      />-->
-<!--      <span slot="footer" class="dialog-footer">-->
-<!--        &lt;!&ndash;<el-button @click="editVisible = false">取 消</el-button>&ndash;&gt;-->
-<!--        <el-button type="primary" @click="showImgVisible=false;imageUrl=''">关 闭</el-button>-->
-<!--      </span>-->
-<!--    </el-dialog>-->
-
-    <!--Excel导出-->
-
+    <br>
+    <el-table
+      ref="multipleTable"
+      :data="tableData"
+      border
+      style="width: 100%"
+      stripe
+      tooltip-effect="dark"
+      @selection-change="selsChange"
+    >
+      <el-table-column type="selection" width="55" />
+      <!--索引-->
+      <el-table-column type="index" :index="indexMethod" label="序号" width="80" align="center" />
+      <el-table-column prop="fileName" label="文件名称" width="180" align="center" />
+      <el-table-column prop="fileType" label="文件类型" align="center" />
+      <el-table-column prop="productType" label="产品类型" align="center" />
+      <el-table-column prop="productVersion" label="文件版本" align="center" />
+      <el-table-column prop="fileSize" label="文件大小（KB)" align="center" />
+    </el-table>
+    <br>
+    <el-pagination
+      :current-page="currentPage"
+      :page-sizes="[10, 20, 50, 100]"
+      :page-size="pageSize"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="totalData.length"
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+    />
   </div>
 </template>
 
 <script>
 import { getList, delData, delDatas } from '../../api/api'
 import WebUpload from '../../components/Upload/WebUpload'
+import axios from 'axios'
 
 export default {
   name: 'Uploadfile',
@@ -75,7 +79,11 @@ export default {
         pageSize: 10
       },
       formTitle: '添加',
+      currentPage: 1,
+      pageSize: 10,
+      totalData: [],
       tableData: [],
+      sels: [],
       multipleSelection: [],
       delList: [],
       editVisible: false,
@@ -117,36 +125,37 @@ export default {
   },
   created() {
     // this.getData()
+    this.getFiles()
   },
   methods: {
-    getData() {
-      var that = this
-      this.loading = true
-      var query = this.query
-      var pageSize = query.pageSize
-      var pageIndex = query.pageIndex
-      var reqData = {}
-
-      if (query.orgName.length > 0) {
-        reqData.orgName = query.orgName
-      }
-      if (query.fileType != null && query.fileType !== '') {
-        reqData.fileType = query.fileType
-      }
-
-      getList(reqData, pageIndex, pageSize).then(res => {
-        if (res.success) {
-          var resdata = res.data
-          var rows = resdata.rows
-          for (var i = 0; i < rows.length; i++) {
-            var fileSize = rows[i].fileSize
-            rows[i].fileSizeStr = this.formatFileSize(fileSize)
-            rows[i].networkPathURL = this.uploadSuffixUrl + rows[i].networkPath
+    getFiles(currentPage, pageSize) {
+      const url = '/fileManagement/fileInfo'
+      this.isLoading = true
+      axios.get(url).then(res => {
+        this.totalData = res.data
+        console.log(totalSize)
+        const totalSize = res.data.length
+        this.tableData = res.data.slice(pageSize * (currentPage - 1), (pageSize * currentPage >= totalSize) ? totalSize : (pageSize * currentPage))
+        this.isLoading = false
+      }).catch(error => {
+        this.isLoading = false
+        if (error.response) {
+          console.log('error.response')
+          console.log(error.response)
+        } else if (error.request) {
+          console.log(error.request)
+          this.$message({
+            duration: 6000,
+            message: '请求异常',
+            type: 'error'
+          })
+          if (error.request.readyState === 4 && error.request.status === 0) {
+            console.log('补充重试逻辑')
           }
-          that.tableData = rows
-          that.pageTotal = resdata.total || 50
+        } else {
+          console.log('Error', error.message)
         }
-        that.loading = false
+        console.log(error.config)
       })
     },
     // 触发搜索按钮
@@ -260,13 +269,18 @@ export default {
       this.fileList = []
     },
     // 分页导航
-    handlePageChange(val) {
-      this.$set(this.query, 'pageIndex', val)
-      this.getData()
-    },
     handleSizeChange(val) {
-      this.$set(this.query, 'pageSize', val)
-      this.getData()
+      this.pageSize = val
+      this.getFiles(this.currentPage, this.pageSize)
+      // console.log(`每页 ${val} 条`)
+    },
+    handleCurrentChange(val) {
+      this.currentPage = val
+      this.getFiles(this.currentPage, this.pageSize)
+      // console.log(`当前页: ${val}`)
+    },
+    indexMethod(index) {
+      return index + 1 + this.pageSize * (this.currentPage - 1)
     },
     handleGetFile(e) {
       const file = e.target.files[0]
